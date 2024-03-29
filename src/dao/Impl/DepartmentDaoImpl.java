@@ -52,28 +52,30 @@ public class DepartmentDaoImpl implements DepartmentService, GenericService<Depa
     @Override
     public void removeById(Long id) {
         for (Hospital hospital : Database.hospitals) {
-            if (hospital.getId().equals(id)) {
-                for (Department department : hospital.getDepartments()) {
-                    Database.hospitals.remove(department);
-                    System.out.println("success fyllu removed");
+            for (Department department : hospital.getDepartments()) {
+                if (department.getId().equals(id)) {
+                    hospital.getDepartments().remove(department);
+                    System.out.println("successfyllu removed");
+                    return;
                 }
-            } else {
-                System.out.println("not found id " + id);
             }
-        }
+            throw new RuntimeException("not found id " + id);
 
+        }
     }
 
     @Override
     public String upDateById(Long id, Department department) {
         for (Hospital hospital : Database.hospitals) {
-            if (hospital.getId().equals(id)) {
-                hospital.getDepartments().add(department);
-                return "success ful removed";
+            for (Department department1 : hospital.getDepartments()) {
+                if (department1.getId().equals(id)) {
+                    department1.setDepartmentName(department.getDepartmentName());
+                    return "successfully removed";
+                }
             }
 
 
         }
-        return null;
+        return "not found";
     }
 }

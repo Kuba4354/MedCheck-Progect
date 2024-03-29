@@ -24,14 +24,21 @@ public class PatientDaoImpl implements PatientService, GenericService<Patient> {
 
     @Override
     public Patient getPatientById(Long id) {
-        Patient patient = new Patient();
+        Patient result = null;
         for (Hospital hospital : Database.hospitals) {
-            if (id.equals(patient.getId())) {
-                return patient;
+            for (Patient patient : hospital.getPatients()) {
+                if (patient.getId().equals(id)) {
+                    result = patient;
+                    break;
+                }
+            }
+            if (result != null) break;
+            {
+                throw new IllegalArgumentException("Patient by" + id + "not found");
             }
         }
 
-        return null;
+        return result;
     }
 
     @Override
@@ -79,15 +86,17 @@ public class PatientDaoImpl implements PatientService, GenericService<Patient> {
     @Override
     public void removeById(Long id) {
         for (Hospital hospital : Database.hospitals) {
-            for (Patient patient : hospital.getPatients()) {
-                if (patient.getId().equals(id)) {
-                    hospital.getPatients().remove(patient);
-
+            Iterator<Patient> iterator = hospital.getPatients().iterator();
+            while (iterator.hasNext()) {
+                Patient patient1 = iterator.next();
+                iterator.remove();
+                if (patient1.getId().equals(id)) {
+                    hospital.getPatients().remove(patient1);
                 }
+
             }
 
         }
-
     }
 
 
